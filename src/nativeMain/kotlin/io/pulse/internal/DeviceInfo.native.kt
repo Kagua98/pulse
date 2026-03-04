@@ -2,10 +2,13 @@ package io.pulse.internal
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
 import platform.Foundation.NSProcessInfo
 import platform.UIKit.UIDevice
 import platform.UIKit.UIScreen
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 internal actual fun rememberDeviceInfoSections(): List<InfoSection> = remember {
     val device = UIDevice.currentDevice
@@ -35,7 +38,7 @@ internal actual fun rememberDeviceInfoSections(): List<InfoSection> = remember {
             title = "Display",
             entries = listOf(
                 "Scale" to screen.scale.toString(),
-                "Bounds" to "${screen.bounds.size.width} x ${screen.bounds.size.height}",
+                "Bounds" to screen.bounds.useContents { "${size.width} x ${size.height}" },
                 "Native Scale" to screen.nativeScale.toString(),
             ),
         ),
