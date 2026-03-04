@@ -4,7 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import io.pulse.Pulse
+import io.pulse.PulseCore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -22,7 +22,7 @@ class PulseTileService : TileService() {
     override fun onClick() {
         PulseTileState.toggle()
         // Sync with Compose state so the performance overlay reacts
-        Pulse.showPerformanceOverlay = PulseTileState.isActive
+        PulseCore.showPerformanceOverlay = PulseTileState.isActive
         qsTile?.let { tile ->
             val active = PulseTileState.isActive
             tile.state = if (active) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE

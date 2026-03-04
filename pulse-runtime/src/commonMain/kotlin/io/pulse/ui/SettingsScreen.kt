@@ -43,8 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.pulse.NotificationContentType
-import io.pulse.Pulse
 import io.pulse.PulseAccessMode
+import io.pulse.PulseCore
 import io.pulse.internal.SecurityManager
 import io.pulse.ui.components.PulseTopBar
 import io.pulse.ui.theme.PulseColors
@@ -54,11 +54,11 @@ import io.pulse.ui.theme.paletteFor
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun SettingsScreen(onBack: () -> Unit) {
-    var accessMode by remember { mutableStateOf(Pulse.accessMode) }
-    var notificationContentType by remember { mutableStateOf(Pulse.notificationContentType) }
-    var maxTransactions by remember { mutableStateOf(Pulse.maxTransactions) }
-    var selectedTheme by remember { mutableStateOf(Pulse.currentTheme) }
-    var showPerfOverlay by remember { mutableStateOf(Pulse.showPerformanceOverlay) }
+    var accessMode by remember { mutableStateOf(PulseCore.accessMode) }
+    var notificationContentType by remember { mutableStateOf(PulseCore.notificationContentType) }
+    var maxTransactions by remember { mutableStateOf(PulseCore.maxTransactions) }
+    var selectedTheme by remember { mutableStateOf(PulseCore.currentTheme) }
+    var showPerfOverlay by remember { mutableStateOf(PulseCore.showPerformanceOverlay) }
     var redactHeaders by remember { mutableStateOf(SecurityManager.redactSensitiveHeaders) }
     var showClearConfirmation by remember { mutableStateOf(false) }
 
@@ -89,7 +89,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                     selected = accessMode == PulseAccessMode.Fab,
                     onClick = {
                         accessMode = PulseAccessMode.Fab
-                        Pulse.accessMode = PulseAccessMode.Fab
+                        PulseCore.accessMode = PulseAccessMode.Fab
                     },
                 )
                 AccessModeOption(
@@ -98,7 +98,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                     selected = accessMode == PulseAccessMode.Notification,
                     onClick = {
                         accessMode = PulseAccessMode.Notification
-                        Pulse.accessMode = PulseAccessMode.Notification
+                        PulseCore.accessMode = PulseAccessMode.Notification
                     },
                 )
                 AccessModeOption(
@@ -107,7 +107,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                     selected = accessMode == PulseAccessMode.ShakeGesture,
                     onClick = {
                         accessMode = PulseAccessMode.ShakeGesture
-                        Pulse.accessMode = PulseAccessMode.ShakeGesture
+                        PulseCore.accessMode = PulseAccessMode.ShakeGesture
                     },
                 )
             }
@@ -125,7 +125,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                             selected = notificationContentType == type,
                             onClick = {
                                 notificationContentType = type
-                                Pulse.notificationContentType = type
+                                PulseCore.notificationContentType = type
                             },
                         )
                     }
@@ -149,7 +149,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                             selected = selectedTheme == theme,
                             onClick = {
                                 selectedTheme = theme
-                                Pulse.currentTheme = theme
+                                PulseCore.currentTheme = theme
                             },
                         )
                     }
@@ -167,7 +167,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                         .fillMaxWidth()
                         .clickable {
                             showPerfOverlay = !showPerfOverlay
-                            Pulse.showPerformanceOverlay = showPerfOverlay
+                            PulseCore.showPerformanceOverlay = showPerfOverlay
                         }
                         .padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -189,7 +189,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                         checked = showPerfOverlay,
                         onCheckedChange = { checked ->
                             showPerfOverlay = checked
-                            Pulse.showPerformanceOverlay = checked
+                            PulseCore.showPerformanceOverlay = checked
                         },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = PulseColors.success,
@@ -269,7 +269,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                             selected = maxTransactions == option,
                             onClick = {
                                 maxTransactions = option
-                                Pulse.configure { this.maxTransactions = option }
+                                PulseCore.configure { this.maxTransactions = option }
                             },
                         )
                     }
@@ -325,7 +325,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
                                     )
                                     .clip(RoundedCornerShape(8.dp))
                                     .clickable {
-                                        Pulse.clear()
+                                        PulseCore.clear()
                                         showClearConfirmation = false
                                     }
                                     .padding(vertical = 10.dp),

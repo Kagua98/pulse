@@ -34,7 +34,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.pulse.Pulse
+import io.pulse.PulseCore
 import io.pulse.model.CrashEntry
 import io.pulse.ui.components.PulseTopBar
 import io.pulse.ui.theme.PulseColors
@@ -42,7 +42,7 @@ import io.pulse.util.formatTimestamp
 
 @Composable
 internal fun CrashViewerScreen(onBack: () -> Unit) {
-    val crashes by Pulse.crashes.collectAsState()
+    val crashes by PulseCore.crashes.collectAsState()
     var expandedCrashId by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -57,7 +57,7 @@ internal fun CrashViewerScreen(onBack: () -> Unit) {
             onBack = onBack,
             actions = {
                 if (crashes.isNotEmpty()) {
-                    TextButton(onClick = { Pulse.clearCrashes() }) {
+                    TextButton(onClick = { PulseCore.clearCrashes() }) {
                         Text("Clear", color = PulseColors.serverError, fontSize = 12.sp)
                     }
                 }

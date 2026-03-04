@@ -32,7 +32,7 @@ class PulseKtorPlugin private constructor(private val config: PulseConfig) {
             val maxContentLength = plugin.config.maxContentLength
 
             scope.plugin(HttpSend).intercept { request ->
-                if (!Pulse.enabled) return@intercept execute(request)
+                if (!PulseCore.enabled) return@intercept execute(request)
 
                 val id = Uuid.random().toString()
                 val startTime = epochMillis()
@@ -45,7 +45,7 @@ class PulseKtorPlugin private constructor(private val config: PulseConfig) {
                 val originalCall = try {
                     execute(request)
                 } catch (cause: Exception) {
-                    Pulse.store.addTransaction(
+                    PulseCore.store.addTransaction(
                         HttpTransaction(
                             id = id,
                             method = request.method.value,
@@ -74,7 +74,7 @@ class PulseKtorPlugin private constructor(private val config: PulseConfig) {
                 val responseHeaders = savedCall.response.headers.entries()
                     .associate { (key, values) -> key to values.joinToString(", ") }
 
-                Pulse.store.addTransaction(
+                PulseCore.store.addTransaction(
                     HttpTransaction(
                         id = id,
                         method = request.method.value,

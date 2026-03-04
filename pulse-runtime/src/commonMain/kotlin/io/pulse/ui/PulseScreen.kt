@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import io.pulse.Pulse
+import io.pulse.PulseCore
 import io.pulse.internal.PulseBackHandler
 import io.pulse.model.HttpTransaction
 import io.pulse.ui.theme.PulseThemeProvider
@@ -36,7 +36,7 @@ internal fun PulseScreen(onClose: () -> Unit) {
         }
     }
 
-    PulseThemeProvider(theme = Pulse.currentTheme) {
+    PulseThemeProvider(theme = PulseCore.currentTheme) {
         when (val dest = destination) {
             PulseDestination.Home -> PulseHome(
                 onNavigate = { destination = it },

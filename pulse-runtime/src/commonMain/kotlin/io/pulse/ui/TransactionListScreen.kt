@@ -41,7 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.pulse.Pulse
+import io.pulse.PulseCore
 import io.pulse.internal.rememberShareContext
 import io.pulse.model.HttpTransaction
 import io.pulse.model.TransactionStatus
@@ -63,7 +63,7 @@ internal fun TransactionListScreen(
     onTransactionClick: (HttpTransaction) -> Unit,
     onBack: () -> Unit,
 ) {
-    val transactions by Pulse.transactions.collectAsState()
+    val transactions by PulseCore.transactions.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf(StatusFilter.All) }
     val selectedIds = remember { mutableStateListOf<String>() }
@@ -121,7 +121,7 @@ internal fun TransactionListScreen(
                     subtitle = "${transactions.size} calls",
                     onBack = onBack,
                     actions = {
-                        TextButton(onClick = { Pulse.clearNetwork() }) {
+                        TextButton(onClick = { PulseCore.clearNetwork() }) {
                             Text("Clear", color = PulseColors.serverError, fontSize = 12.sp)
                         }
                     },

@@ -1,6 +1,6 @@
 package io.pulse.internal
 
-import io.pulse.Pulse
+import io.pulse.PulseCore
 import io.pulse.model.HttpTransaction
 import io.pulse.model.TransactionStatus
 import io.ktor.client.HttpClient
@@ -78,7 +78,7 @@ internal suspend fun replayRequest(transaction: HttpTransaction): HttpTransactio
         )
 
         // Record the replayed transaction in Pulse's store
-        Pulse.store.addTransaction(replayedTransaction)
+        PulseCore.store.addTransaction(replayedTransaction)
 
         replayedTransaction
     } catch (cause: Exception) {
@@ -100,7 +100,7 @@ internal suspend fun replayRequest(transaction: HttpTransaction): HttpTransactio
         )
 
         // Record the failed replayed transaction too
-        Pulse.store.addTransaction(failedTransaction)
+        PulseCore.store.addTransaction(failedTransaction)
 
         failedTransaction
     } finally {

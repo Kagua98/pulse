@@ -18,14 +18,14 @@ import kotlin.uuid.Uuid
  *     .build()
  * ```
  *
- * The interceptor respects [Pulse.enabled] -- when Pulse is disabled, requests pass
+ * The interceptor respects [PulseCore.enabled] -- when Pulse is disabled, requests pass
  * through without any overhead.
  */
 class PulseOkHttpInterceptor : Interceptor {
 
     @OptIn(ExperimentalUuidApi::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        if (!Pulse.enabled) return chain.proceed(chain.request())
+        if (!PulseCore.enabled) return chain.proceed(chain.request())
 
         val request = chain.request()
         val startTime = epochMillis()
@@ -63,7 +63,7 @@ class PulseOkHttpInterceptor : Interceptor {
         )
 
         // Record the in-flight transaction so it appears immediately in the UI
-        Pulse.store.addTransaction(transaction)
+        PulseCore.store.addTransaction(transaction)
 
         return try {
             val response = chain.proceed(request)
@@ -88,7 +88,7 @@ class PulseOkHttpInterceptor : Interceptor {
                 status = TransactionStatus.Complete,
             )
 
-            Pulse.store.updateTransaction(transaction.id) { completedTransaction }
+            PulseCore.store.updateTransaction(transaction.id) { completedTransaction }
             response
         } catch (e: Exception) {
             val failedTransaction = transaction.copy(
@@ -96,7 +96,7 @@ class PulseOkHttpInterceptor : Interceptor {
                 duration = epochMillis() - startTime,
                 status = TransactionStatus.Failed,
             )
-            Pulse.store.updateTransaction(transaction.id) { failedTransaction }
+            PulseCore.store.updateTransaction(transaction.id) { failedTransaction }
             throw e
         }
     }

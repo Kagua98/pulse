@@ -13,3 +13,8 @@ internal actual fun platformLog(level: LogLevel, tag: String, message: String, t
         NSLog("${throwable.stackTraceToString()}")
     }
 }
+
+internal actual fun callerTag(): String {
+    // Kotlin/Native stack traces are not reliably parseable at runtime
+    return "Pulse"
+}

@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.pulse.Pulse
+import io.pulse.PulseCore
 import io.pulse.internal.getRetainedObjectCount
 import io.pulse.internal.isLeakDetectionAvailable
 import io.pulse.ui.components.PulseTopBar
@@ -38,9 +39,9 @@ internal fun PulseHome(
     onNavigate: (PulseDestination) -> Unit,
     onClose: () -> Unit,
 ) {
-    val transactions by Pulse.transactions.collectAsState()
+    val transactions by PulseCore.transactions.collectAsState()
     val logs by Pulse.logs.collectAsState()
-    val crashes by Pulse.crashes.collectAsState()
+    val crashes by PulseCore.crashes.collectAsState()
 
     Column(
         modifier = Modifier
@@ -51,7 +52,7 @@ internal fun PulseHome(
         PulseTopBar(
             title = "Pulse",
             actions = {
-                TextButton(onClick = { Pulse.clear() }) {
+                TextButton(onClick = { PulseCore.clear() }) {
                     Text(
                         "Clear All",
                         color = PulseColors.serverError,

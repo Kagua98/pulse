@@ -36,8 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.pulse.Pulse
 import io.pulse.PulseAccessMode
+import io.pulse.PulseCore
 import io.pulse.internal.DarkStatusBarEffect
 import io.pulse.internal.NotificationAccessEffect
 import io.pulse.internal.ShakeDetectorEffect
@@ -74,8 +74,8 @@ fun PulseOverlay(
     content: @Composable () -> Unit = {},
 ) {
     var showInspector by remember { mutableStateOf(false) }
-    val transactions by Pulse.transactions.collectAsState()
-    val currentAccessMode = Pulse.accessMode
+    val transactions by PulseCore.transactions.collectAsState()
+    val currentAccessMode = PulseCore.accessMode
 
     Box(modifier = Modifier.fillMaxSize()) {
         content()
@@ -119,9 +119,9 @@ fun PulseOverlay(
         }
 
         // Performance overlay – visible alongside app content, independent of inspector
-        if (Pulse.showPerformanceOverlay) {
+        if (PulseCore.showPerformanceOverlay) {
             PerformanceOverlay(
-                onDismiss = { Pulse.showPerformanceOverlay = false },
+                onDismiss = { PulseCore.showPerformanceOverlay = false },
             )
         }
 

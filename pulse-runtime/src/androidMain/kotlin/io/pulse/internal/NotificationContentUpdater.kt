@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.compose.runtime.snapshotFlow
 import androidx.core.app.NotificationCompat
 import io.pulse.Pulse
+import io.pulse.PulseCore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,12 +35,12 @@ internal class NotificationContentUpdater(private val context: Context) {
         ensureNotificationChannel(context)
 
         job = newScope.launch {
-            val contentTypeFlow = snapshotFlow { Pulse.notificationContentType }
+            val contentTypeFlow = snapshotFlow { PulseCore.notificationContentType }
 
             combine(
-                Pulse.transactions,
+                PulseCore.transactions,
                 Pulse.logs,
-                Pulse.crashes,
+                PulseCore.crashes,
                 contentTypeFlow,
             ) { transactions, logs, crashes, contentType ->
                 NotificationContentFormatter.format(contentType, transactions, logs, crashes)

@@ -23,7 +23,7 @@ class PulseTest {
 
     @Test
     fun v_logs_with_verbose_level() {
-        Pulse.v("Tag", "verbose message")
+        Pulse.v("verbose message", tag = "Tag")
         val entry = Pulse.logs.value.first()
         assertEquals(LogLevel.VERBOSE, entry.level)
         assertEquals("Tag", entry.tag)
@@ -32,7 +32,7 @@ class PulseTest {
 
     @Test
     fun d_logs_with_debug_level() {
-        Pulse.d("Tag", "debug message")
+        Pulse.d("debug message", tag = "Tag")
         val entry = Pulse.logs.value.first()
         assertEquals(LogLevel.DEBUG, entry.level)
         assertEquals("debug message", entry.message)
@@ -40,7 +40,7 @@ class PulseTest {
 
     @Test
     fun i_logs_with_info_level() {
-        Pulse.i("Tag", "info message")
+        Pulse.i("info message", tag = "Tag")
         val entry = Pulse.logs.value.first()
         assertEquals(LogLevel.INFO, entry.level)
         assertEquals("info message", entry.message)
@@ -48,7 +48,7 @@ class PulseTest {
 
     @Test
     fun w_logs_with_warn_level() {
-        Pulse.w("Tag", "warn message")
+        Pulse.w("warn message", tag = "Tag")
         val entry = Pulse.logs.value.first()
         assertEquals(LogLevel.WARN, entry.level)
         assertEquals("warn message", entry.message)
@@ -56,7 +56,7 @@ class PulseTest {
 
     @Test
     fun e_logs_with_error_level() {
-        Pulse.e("Tag", "error message")
+        Pulse.e("error message", tag = "Tag")
         val entry = Pulse.logs.value.first()
         assertEquals(LogLevel.ERROR, entry.level)
         assertEquals("error message", entry.message)
@@ -68,27 +68,27 @@ class PulseTest {
 
     @Test
     fun log_preserves_tag() {
-        Pulse.d("MyTag", "test")
+        Pulse.d("test", tag = "MyTag")
         assertEquals("MyTag", Pulse.logs.value.first().tag)
     }
 
     @Test
     fun log_preserves_message() {
-        Pulse.i("Tag", "Hello, world!")
+        Pulse.i("Hello, world!", tag = "Tag")
         assertEquals("Hello, world!", Pulse.logs.value.first().message)
     }
 
     @Test
     fun log_entries_have_unique_ids() {
-        Pulse.d("Tag", "first")
-        Pulse.d("Tag", "second")
+        Pulse.d("first", tag = "Tag")
+        Pulse.d("second", tag = "Tag")
         val ids = Pulse.logs.value.map { it.id }.toSet()
         assertEquals(2, ids.size, "Each log entry should have a unique ID")
     }
 
     @Test
     fun log_entries_have_timestamps() {
-        Pulse.d("Tag", "timestamped")
+        Pulse.d("timestamped", tag = "Tag")
         val entry = Pulse.logs.value.first()
         assertTrue(entry.timestamp > 0, "Timestamp should be a positive value")
     }
@@ -100,7 +100,7 @@ class PulseTest {
     @Test
     fun w_stores_throwable_stack_trace() {
         val exception = RuntimeException("test warning")
-        Pulse.w("Tag", "warning with throwable", exception)
+        Pulse.w("warning with throwable", tag = "Tag", throwable = exception)
         val entry = Pulse.logs.value.first()
         assertTrue(
             entry.throwable != null && entry.throwable.contains("RuntimeException"),
@@ -111,7 +111,7 @@ class PulseTest {
     @Test
     fun e_stores_throwable_stack_trace() {
         val exception = IllegalStateException("bad state")
-        Pulse.e("Tag", "error with throwable", exception)
+        Pulse.e("error with throwable", tag = "Tag", throwable = exception)
         val entry = Pulse.logs.value.first()
         assertTrue(
             entry.throwable != null && entry.throwable.contains("IllegalStateException"),
@@ -121,7 +121,7 @@ class PulseTest {
 
     @Test
     fun d_without_throwable_has_null_throwable_field() {
-        Pulse.d("Tag", "no throwable")
+        Pulse.d("no throwable", tag = "Tag")
         val entry = Pulse.logs.value.first()
         assertEquals(null, entry.throwable, "Log without throwable should have null throwable field")
     }
@@ -184,9 +184,8 @@ class PulseTest {
 
     @Test
     fun clear_removes_all_logs_transactions_and_crashes() {
-        Pulse.d("Tag", "log message")
+        Pulse.d("log message", tag = "Tag")
         Pulse.recordCrash("main", RuntimeException("crash"))
-        // Add a transaction through the store directly
         Pulse.store.addTransaction(createTestTransaction(id = "txn-clear"))
 
         Pulse.clear()
@@ -202,7 +201,7 @@ class PulseTest {
 
     @Test
     fun clearNetwork_clears_only_transactions() {
-        Pulse.d("Tag", "log message")
+        Pulse.d("log message", tag = "Tag")
         Pulse.recordCrash("main", RuntimeException("crash"))
         Pulse.store.addTransaction(createTestTransaction(id = "txn-clear-net"))
 
@@ -219,7 +218,7 @@ class PulseTest {
 
     @Test
     fun clearLogs_clears_only_logs() {
-        Pulse.d("Tag", "log message")
+        Pulse.d("log message", tag = "Tag")
         Pulse.recordCrash("main", RuntimeException("crash"))
         Pulse.store.addTransaction(createTestTransaction(id = "txn-clear-logs"))
 
@@ -236,7 +235,7 @@ class PulseTest {
 
     @Test
     fun clearCrashes_clears_only_crashes() {
-        Pulse.d("Tag", "log message")
+        Pulse.d("log message", tag = "Tag")
         Pulse.recordCrash("main", RuntimeException("crash"))
         Pulse.store.addTransaction(createTestTransaction(id = "txn-clear-crashes"))
 
@@ -303,9 +302,9 @@ class PulseTest {
 
     @Test
     fun multiple_logs_accumulate_in_order() {
-        Pulse.d("Tag", "first")
-        Pulse.i("Tag", "second")
-        Pulse.e("Tag", "third")
+        Pulse.d("first", tag = "Tag")
+        Pulse.i("second", tag = "Tag")
+        Pulse.e("third", tag = "Tag")
 
         val logs = Pulse.logs.value
         assertEquals(3, logs.size, "Should have three log entries")
