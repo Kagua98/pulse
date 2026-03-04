@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -170,11 +169,11 @@ private fun DraggableFab(
                 onClick = onClick,
                 containerColor = PulseColors.surfaceVariant,
                 contentColor = PulseColors.onSurface,
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(56.dp),
             ) {
-                PulseIcon(modifier = Modifier.size(22.dp))
+                PulseIcon(modifier = Modifier.size(28.dp))
             }
 
             // Badge count
@@ -199,9 +198,9 @@ private fun DraggableFab(
 }
 
 /**
- * A heartbeat/pulse waveform icon drawn via Canvas.
- * Draws an ECG-style trace: flat baseline → small bump → sharp spike up →
- * deep trough → recovery → gentle wave → flat baseline.
+ * A signal-wave icon drawn via Canvas.
+ * Draws a smooth zigzag wave pattern: three symmetric triangle peaks
+ * representing a pulse/signal waveform.
  */
 @Composable
 private fun PulseIcon(modifier: Modifier = Modifier) {
@@ -210,36 +209,30 @@ private fun PulseIcon(modifier: Modifier = Modifier) {
         val w = size.width
         val h = size.height
         val mid = h * 0.5f
+        val amplitude = h * 0.38f
         val strokeWidth = w * 0.09f
 
         val path = Path().apply {
-            // Start at left edge, centered
             moveTo(0f, mid)
-            // Flat lead-in
-            lineTo(w * 0.15f, mid)
-            // Small P-wave bump
-            lineTo(w * 0.22f, mid - h * 0.10f)
-            lineTo(w * 0.28f, mid)
-            // Lead into QRS: slight dip
-            lineTo(w * 0.33f, mid + h * 0.04f)
-            // Sharp R-wave spike up
-            lineTo(w * 0.40f, h * 0.08f)
-            // Deep S-wave trough
-            lineTo(w * 0.48f, h * 0.82f)
-            // Recovery back to baseline
-            lineTo(w * 0.55f, mid - h * 0.06f)
-            lineTo(w * 0.60f, mid)
-            // Gentle T-wave
-            lineTo(w * 0.68f, mid - h * 0.12f)
-            lineTo(w * 0.76f, mid)
-            // Flat tail-out
+            // Wave 1
+            lineTo(w * 0.08f, mid)
+            lineTo(w * 0.17f, mid - amplitude)
+            lineTo(w * 0.25f, mid + amplitude)
+            // Wave 2 (taller)
+            lineTo(w * 0.375f, mid - amplitude * 1.15f)
+            lineTo(w * 0.50f, mid + amplitude * 1.15f)
+            // Wave 3
+            lineTo(w * 0.58f, mid - amplitude)
+            lineTo(w * 0.67f, mid + amplitude)
+            // Tail-out
+            lineTo(w * 0.75f, mid)
             lineTo(w, mid)
         }
 
-        // Glow / shadow pass
+        // Glow pass
         drawPath(
             path = path,
-            color = color.copy(alpha = 0.3f),
+            color = color.copy(alpha = 0.25f),
             style = Stroke(
                 width = strokeWidth * 2.8f,
                 cap = StrokeCap.Round,
@@ -256,13 +249,6 @@ private fun PulseIcon(modifier: Modifier = Modifier) {
                 cap = StrokeCap.Round,
                 join = StrokeJoin.Round,
             ),
-        )
-
-        // Bright dot at the R-wave peak
-        drawCircle(
-            color = color,
-            radius = strokeWidth * 0.9f,
-            center = Offset(w * 0.40f, h * 0.08f),
         )
     }
 }
