@@ -55,23 +55,23 @@ private object FabOffsetHolder {
 
 /**
  * Overlay composable that adds a developer-tools access mechanism to open
- * the Pulse inspector. Wrap your app content with this composable.
+ * the Pulse inspector.
  *
- * Usage:
+ * On Android, this is automatically injected into every Activity — no setup needed.
+ * For KMP or manual usage, wrap your app content:
  * ```
  * PulseOverlay {
- *     // Your app content
  *     MyAppContent()
  * }
  * ```
  *
  * @param enabled Whether the overlay is active.
- * @param content Your application content.
+ * @param content Your application content (optional on Android where auto-injection handles it).
  */
 @Composable
 fun PulseOverlay(
     enabled: Boolean = true,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit = {},
 ) {
     var showInspector by remember { mutableStateOf(false) }
     val transactions by Pulse.transactions.collectAsState()

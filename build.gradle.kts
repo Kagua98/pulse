@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "io.github.kagua98"
-version = "1.0.0-alpha02"
+version = "1.0.0-alpha03"
 
 kotlin {
     androidTarget {
@@ -84,7 +84,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.kagua98",
         artifactId = "pulse",
-        version = "1.0.0-alpha02",
+        version = "1.0.0-alpha03",
     )
 
     pom {
