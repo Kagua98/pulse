@@ -15,4 +15,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "pulse"
+rootProject.name = "pulse-project"
+
+include(":pulse-log")
+include(":pulse-runtime")
