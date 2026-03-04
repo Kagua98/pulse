@@ -3,13 +3,13 @@ package io.pulse.internal
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.RectF
 import androidx.core.graphics.drawable.IconCompat
 
 /**
- * Creates a monochrome pulse-waveform [IconCompat] for use as the notification
- * small icon. The path matches the FAB's [PulseIcon] composable so both icons
- * are visually identical.
+ * Creates a monochrome radar-ping [IconCompat] for use as the notification
+ * small icon. The design matches the FAB's [PulseIcon] composable: a center
+ * dot with three concentric arcs radiating outward.
  *
  * Status-bar icons use only the alpha channel, so we draw white-on-transparent.
  */
@@ -26,51 +26,38 @@ internal object PulseNotificationIcon {
 
         val w = size.toFloat()
         val h = size.toFloat()
-        // Vertical padding so the waveform isn't edge-to-edge
-        val pad = h * 0.18f
-        val drawH = h - pad * 2
-        val mid = pad + drawH * 0.5f
-        val strokeWidth = w * 0.06f
+        val strokeWidth = w * 0.07f
 
-        val path = Path().apply {
-            moveTo(w * 0.04f, mid)
-            // Flat lead-in
-            lineTo(w * 0.15f, mid)
-            // Small P-wave bump
-            lineTo(w * 0.22f, mid - drawH * 0.10f)
-            lineTo(w * 0.28f, mid)
-            // Lead into QRS: slight dip
-            lineTo(w * 0.33f, mid + drawH * 0.04f)
-            // Sharp R-wave spike up
-            lineTo(w * 0.40f, pad + drawH * 0.08f)
-            // Deep S-wave trough
-            lineTo(w * 0.48f, pad + drawH * 0.82f)
-            // Recovery back to baseline
-            lineTo(w * 0.55f, mid - drawH * 0.06f)
-            lineTo(w * 0.60f, mid)
-            // Gentle T-wave
-            lineTo(w * 0.68f, mid - drawH * 0.12f)
-            lineTo(w * 0.76f, mid)
-            // Flat tail-out
-            lineTo(w * 0.96f, mid)
+        // Center dot at ~35% left, ~65% down (matches composable)
+        val cx = w * 0.35f
+        val cy = h * 0.65f
+
+        val white = 0xFFFFFFFF.toInt()
+
+        // Center dot
+        val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = white
+            style = Paint.Style.FILL
         }
+        canvas.drawCircle(cx, cy, w * 0.065f, dotPaint)
 
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = 0xFFFFFFFF.toInt() // white — system tints it
+        // Three concentric arcs radiating upper-right
+        val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = white
             style = Paint.Style.STROKE
             strokeCap = Paint.Cap.ROUND
-            strokeJoin = Paint.Join.ROUND
             this.strokeWidth = strokeWidth
         }
 
-        canvas.drawPath(path, paint)
+        val alphas = intArrayOf(255, 179, 102) // 1.0, 0.7, 0.4
+        val radii = floatArrayOf(w * 0.22f, w * 0.38f, w * 0.54f)
 
-        // Dot at R-wave peak
-        val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = 0xFFFFFFFF.toInt()
-            style = Paint.Style.FILL
+        for (i in alphas.indices) {
+            val r = radii[i]
+            arcPaint.alpha = alphas[i]
+            val rect = RectF(cx - r, cy - r, cx + r, cy + r)
+            canvas.drawArc(rect, -135f, 90f, false, arcPaint)
         }
-        canvas.drawCircle(w * 0.40f, pad + drawH * 0.08f, strokeWidth * 1.1f, dotPaint)
 
         return IconCompat.createWithBitmap(bitmap)
     }

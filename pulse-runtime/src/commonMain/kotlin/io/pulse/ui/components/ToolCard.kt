@@ -82,11 +82,9 @@ internal fun ToolCard(
                 .background(accentColor.copy(alpha = 0.08f), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = ">",
+            ChevronRightIcon(
+                modifier = Modifier.size(14.dp),
                 color = accentColor.copy(alpha = 0.6f),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
             )
         }
     }

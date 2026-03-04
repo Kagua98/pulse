@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,7 +33,10 @@ internal fun PulseTopBar(
     ) {
         if (onBack != null) {
             TextButton(onClick = onBack) {
-                Text("<", color = PulseColors.onSurface, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                ChevronLeftIcon(
+                    modifier = Modifier.size(16.dp),
+                    color = PulseColors.onSurface,
+                )
             }
         } else {
             Spacer(Modifier.width(12.dp))

@@ -25,8 +25,11 @@ internal sealed interface PulseDestination {
  * Top-level Pulse screen with built-in multi-tool navigation.
  */
 @Composable
-internal fun PulseScreen(onClose: () -> Unit) {
-    var destination by remember { mutableStateOf<PulseDestination>(PulseDestination.Home) }
+internal fun PulseScreen(
+    initialDestination: PulseDestination? = null,
+    onClose: () -> Unit,
+) {
+    var destination by remember { mutableStateOf(initialDestination ?: PulseDestination.Home) }
 
     PulseBackHandler {
         when (destination) {

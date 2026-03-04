@@ -56,7 +56,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.kagua98",
         artifactId = "pulse-log",
-        version = "1.0.0-alpha06",
+        version = "1.0.0-alpha07",
     )
 
     pom {

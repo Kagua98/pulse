@@ -174,7 +174,7 @@ internal fun BodyViewer(
 }
 
 @Composable
-private fun JwtCard(
+internal fun JwtCard(
     label: String,
     tokenPreview: String,
     decoded: DecodedJwt,
@@ -289,7 +289,7 @@ private fun JwtCard(
 }
 
 @Composable
-private fun CollapsibleJsonSection(
+internal fun CollapsibleJsonSection(
     title: String,
     json: String,
     expanded: Boolean,
@@ -339,7 +339,7 @@ private fun CollapsibleJsonSection(
 /**
  * Format epoch seconds to a simple readable date/time string.
  */
-private fun formatEpochSeconds(epochSeconds: Long): String {
+internal fun formatEpochSeconds(epochSeconds: Long): String {
     val totalSeconds = epochSeconds
     val days = totalSeconds / 86400
     val remainingAfterDays = totalSeconds % 86400
@@ -376,5 +376,5 @@ private fun formatEpochSeconds(epochSeconds: Long): String {
         "${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} UTC"
 }
 
-private fun isLeapYear(year: Long): Boolean =
+internal fun isLeapYear(year: Long): Boolean =
     (year % 4 == 0L && year % 100 != 0L) || (year % 400 == 0L)

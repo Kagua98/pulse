@@ -376,7 +376,7 @@ internal fun SettingsScreen(onBack: () -> Unit) {
             // --- Version info ---
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Pulse v1.0.0",
+                text = "Pulse v${io.pulse.PulseVersion.NAME}",
                 color = PulseColors.onSurfaceDim.copy(alpha = 0.5f),
                 fontSize = 11.sp,
                 textAlign = TextAlign.Center,

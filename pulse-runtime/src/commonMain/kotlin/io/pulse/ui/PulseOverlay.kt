@@ -27,9 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +39,7 @@ import io.pulse.PulseCore
 import io.pulse.internal.DarkStatusBarEffect
 import io.pulse.internal.NotificationAccessEffect
 import io.pulse.internal.ShakeDetectorEffect
+import io.pulse.toDestination
 import io.pulse.ui.theme.PulseColors
 import kotlin.math.roundToInt
 
@@ -74,6 +73,7 @@ fun PulseOverlay(
     content: @Composable () -> Unit = {},
 ) {
     var showInspector by remember { mutableStateOf(false) }
+    var initialDestination by remember { mutableStateOf<PulseDestination?>(null) }
     val transactions by PulseCore.transactions.collectAsState()
     val currentAccessMode = PulseCore.accessMode
 
@@ -104,7 +104,10 @@ fun PulseOverlay(
                 PulseAccessMode.Notification -> {
                     NotificationAccessEffect(
                         active = !showInspector,
-                        onOpenRequested = { showInspector = true },
+                        onOpenRequested = {
+                            initialDestination = PulseCore.notificationContentType.toDestination()
+                            showInspector = true
+                        },
                     )
                 }
 
@@ -130,7 +133,13 @@ fun PulseOverlay(
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
         ) {
-            PulseScreen(onClose = { showInspector = false })
+            PulseScreen(
+                initialDestination = initialDestination,
+                onClose = {
+                    showInspector = false
+                    initialDestination = null
+                },
+            )
         }
     }
 }
@@ -198,9 +207,9 @@ private fun DraggableFab(
 }
 
 /**
- * A signal-wave icon drawn via Canvas.
- * Draws a smooth zigzag wave pattern: three symmetric triangle peaks
- * representing a pulse/signal waveform.
+ * A radar/sonar ping icon drawn via Canvas.
+ * Center dot with three concentric arcs radiating outward at decreasing opacity,
+ * representing a detection/monitoring signal.
  */
 @Composable
 private fun PulseIcon(modifier: Modifier = Modifier) {
@@ -208,47 +217,44 @@ private fun PulseIcon(modifier: Modifier = Modifier) {
     Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
-        val mid = h * 0.5f
-        val amplitude = h * 0.38f
-        val strokeWidth = w * 0.09f
+        val strokeWidth = w * 0.07f
 
-        val path = Path().apply {
-            moveTo(0f, mid)
-            // Wave 1
-            lineTo(w * 0.08f, mid)
-            lineTo(w * 0.17f, mid - amplitude)
-            lineTo(w * 0.25f, mid + amplitude)
-            // Wave 2 (taller)
-            lineTo(w * 0.375f, mid - amplitude * 1.15f)
-            lineTo(w * 0.50f, mid + amplitude * 1.15f)
-            // Wave 3
-            lineTo(w * 0.58f, mid - amplitude)
-            lineTo(w * 0.67f, mid + amplitude)
-            // Tail-out
-            lineTo(w * 0.75f, mid)
-            lineTo(w, mid)
-        }
+        // Center dot positioned at ~35% from left, ~65% from top
+        val cx = w * 0.35f
+        val cy = h * 0.65f
 
-        // Glow pass
-        drawPath(
-            path = path,
-            color = color.copy(alpha = 0.25f),
-            style = Stroke(
-                width = strokeWidth * 2.8f,
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round,
-            ),
+        // Soft glow behind the center dot
+        drawCircle(
+            color = color.copy(alpha = 0.2f),
+            radius = w * 0.09f,
+            center = androidx.compose.ui.geometry.Offset(cx, cy),
         )
 
-        // Main waveform stroke
-        drawPath(
-            path = path,
+        // Center dot
+        drawCircle(
             color = color,
-            style = Stroke(
-                width = strokeWidth,
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round,
-            ),
+            radius = w * 0.065f,
+            center = androidx.compose.ui.geometry.Offset(cx, cy),
         )
+
+        // Three concentric arcs radiating upper-right
+        val arcAlphas = floatArrayOf(1.0f, 0.7f, 0.4f)
+        val arcRadii = floatArrayOf(w * 0.22f, w * 0.38f, w * 0.54f)
+
+        for (i in arcAlphas.indices) {
+            val radius = arcRadii[i]
+            drawArc(
+                color = color.copy(alpha = arcAlphas[i]),
+                startAngle = -135f, // upper-right quadrant
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = androidx.compose.ui.geometry.Offset(cx - radius, cy - radius),
+                size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
+                style = Stroke(
+                    width = strokeWidth,
+                    cap = StrokeCap.Round,
+                ),
+            )
+        }
     }
 }

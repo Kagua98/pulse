@@ -132,6 +132,10 @@ internal fun LogViewerScreen(onBack: () -> Unit) {
                             onClick = { expandedLogId = entry.id },
                         )
                     }
+                    HorizontalDivider(
+                        color = PulseColors.divider,
+                        thickness = 0.5.dp,
+                    )
                 }
             }
         }
@@ -275,7 +279,8 @@ private fun ExpandedLogItem(entry: LogEntry, onCollapse: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(PulseColors.surfaceVariant)
-                .padding(12.dp),
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
                 text = "${entry.level.label} | ${formatTimestamp(entry.timestamp)} | ${entry.tag}",
@@ -288,8 +293,7 @@ private fun ExpandedLogItem(entry: LogEntry, onCollapse: () -> Unit) {
                 color = PulseColors.onSurface,
                 fontSize = 12.sp,
                 fontFamily = FontFamily.Monospace,
-                lineHeight = 16.sp,
-                modifier = Modifier.padding(top = 4.dp),
+                lineHeight = 17.sp,
             )
             val throwableText = entry.throwable
             if (!throwableText.isNullOrBlank()) {
@@ -298,8 +302,7 @@ private fun ExpandedLogItem(entry: LogEntry, onCollapse: () -> Unit) {
                     color = PulseColors.serverError,
                     fontSize = 10.sp,
                     fontFamily = FontFamily.Monospace,
-                    lineHeight = 13.sp,
-                    modifier = Modifier.padding(top = 6.dp),
+                    lineHeight = 14.sp,
                 )
             }
             TextButton(onClick = onCollapse) {

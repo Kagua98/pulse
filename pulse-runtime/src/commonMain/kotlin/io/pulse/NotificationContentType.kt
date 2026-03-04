@@ -1,5 +1,7 @@
 package io.pulse
 
+import io.pulse.ui.PulseDestination
+
 /**
  * Controls what content the persistent notification displays when using
  * [PulseAccessMode.Notification].
@@ -13,4 +15,10 @@ enum class NotificationContentType(val label: String, val description: String) {
 
     /** Combined health dashboard: crashes, errors, failed requests. */
     AppHealth("App Health", "Crashes, errors, and failed requests"),
+}
+
+internal fun NotificationContentType.toDestination(): PulseDestination = when (this) {
+    NotificationContentType.NetworkActivity -> PulseDestination.Network
+    NotificationContentType.LogSummary -> PulseDestination.Logs
+    NotificationContentType.AppHealth -> PulseDestination.Crashes
 }

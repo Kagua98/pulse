@@ -29,7 +29,7 @@ internal object PulseCore {
     val crashStore = CrashStore()
 
     var enabled: Boolean = true
-    var accessMode: PulseAccessMode by mutableStateOf(PulseAccessMode.Fab)
+    var accessMode: PulseAccessMode by mutableStateOf(PulseAccessMode.Notification)
     var currentTheme: PulseTheme by mutableStateOf(PulseTheme.Purple)
     var notificationContentType: NotificationContentType by mutableStateOf(NotificationContentType.NetworkActivity)
     var showPerformanceOverlay: Boolean by mutableStateOf(false)

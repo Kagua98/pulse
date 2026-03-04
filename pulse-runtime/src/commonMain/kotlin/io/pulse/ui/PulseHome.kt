@@ -139,7 +139,7 @@ internal fun PulseHome(
 
             // Version indicator
             Text(
-                text = "Pulse v1.0.0",
+                text = "Pulse v${io.pulse.PulseVersion.NAME}",
                 color = PulseColors.onSurfaceDim.copy(alpha = 0.4f),
                 fontSize = 11.sp,
                 textAlign = TextAlign.Center,

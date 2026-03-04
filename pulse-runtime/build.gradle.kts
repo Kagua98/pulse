@@ -11,7 +11,25 @@ plugins {
 }
 
 group = "io.github.kagua98"
-version = "1.0.0-alpha06"
+version = "1.0.0-alpha07"
+
+val generatePulseVersion by tasks.registering {
+    val outputDir = layout.buildDirectory.dir("generated/pulse/kotlin")
+    val ver = project.version.toString()
+    inputs.property("version", ver)
+    outputs.dir(outputDir)
+    doLast {
+        outputDir.get().asFile.resolve("io/pulse/PulseVersion.kt").apply {
+            parentFile.mkdirs()
+            writeText(
+                "package io.pulse\n\n" +
+                    "internal object PulseVersion {\n" +
+                    "    const val NAME: String = \"$ver\"\n" +
+                    "}\n",
+            )
+        }
+    }
+}
 
 kotlin {
     androidTarget {
@@ -35,6 +53,9 @@ kotlin {
     }
 
     sourceSets {
+        commonMain {
+            kotlin.srcDir(generatePulseVersion)
+        }
         commonMain.dependencies {
             api(project(":pulse-log"))
             api(libs.ktor.client.core)
@@ -85,7 +106,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.kagua98",
         artifactId = "pulse",
-        version = "1.0.0-alpha06",
+        version = "1.0.0-alpha07",
     )
 
     pom {

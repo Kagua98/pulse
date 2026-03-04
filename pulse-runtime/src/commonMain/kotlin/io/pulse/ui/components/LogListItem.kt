@@ -37,14 +37,14 @@ internal fun LogListItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.Top,
     ) {
         Box(
             modifier = Modifier
                 .background(levelColor.copy(alpha = 0.15f), RoundedCornerShape(3.dp))
-                .padding(horizontal = 4.dp, vertical = 1.dp)
+                .padding(horizontal = 5.dp, vertical = 2.dp)
                 .width(16.dp),
             contentAlignment = Alignment.Center,
         ) {
@@ -61,9 +61,13 @@ internal fun LogListItem(
             color = PulseColors.onSurfaceDim,
             fontSize = 10.sp,
             fontFamily = FontFamily.Monospace,
+            modifier = Modifier.padding(top = 1.dp),
         )
 
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
             Text(
                 text = entry.tag,
                 color = levelColor,
@@ -78,7 +82,7 @@ internal fun LogListItem(
                 fontSize = 11.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                lineHeight = 14.sp,
+                lineHeight = 15.sp,
             )
         }
     }
