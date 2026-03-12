@@ -16,6 +16,7 @@ kotlin {
     jvm("desktop")
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
     ).forEach { target ->
@@ -56,7 +57,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.kagua98",
         artifactId = "pulse-log",
-        version = "1.0.0-alpha08",
+        version = "1.0.0-alpha09",
     )
 
     pom {
