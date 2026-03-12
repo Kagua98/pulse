@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "io.github.kagua98"
-version = "1.0.0-alpha07"
+version = "1.0.0-alpha08"
 
 val generatePulseVersion by tasks.registering {
     val outputDir = layout.buildDirectory.dir("generated/pulse/kotlin")
@@ -106,7 +106,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.kagua98",
         artifactId = "pulse",
-        version = "1.0.0-alpha07",
+        version = "1.0.0-alpha08",
     )
 
     pom {

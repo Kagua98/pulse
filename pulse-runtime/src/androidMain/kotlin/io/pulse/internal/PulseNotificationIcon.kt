@@ -7,9 +7,8 @@ import android.graphics.RectF
 import androidx.core.graphics.drawable.IconCompat
 
 /**
- * Creates a monochrome radar-ping [IconCompat] for use as the notification
- * small icon. The design matches the FAB's [PulseIcon] composable: a center
- * dot with three concentric arcs radiating outward.
+ * Creates a monochrome wrench/spanner [IconCompat] for use as the notification
+ * small icon. The design matches the FAB's [PulseIcon] composable.
  *
  * Status-bar icons use only the alpha channel, so we draw white-on-transparent.
  */
@@ -26,38 +25,51 @@ internal object PulseNotificationIcon {
 
         val w = size.toFloat()
         val h = size.toFloat()
-        val strokeWidth = w * 0.07f
 
-        // Center dot at ~35% left, ~65% down (matches composable)
-        val cx = w * 0.35f
-        val cy = h * 0.65f
-
-        val white = 0xFFFFFFFF.toInt()
-
-        // Center dot
-        val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = white
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = 0xFFFFFFFF.toInt()
             style = Paint.Style.FILL
         }
-        canvas.drawCircle(cx, cy, w * 0.065f, dotPaint)
 
-        // Three concentric arcs radiating upper-right
-        val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = white
-            style = Paint.Style.STROKE
-            strokeCap = Paint.Cap.ROUND
-            this.strokeWidth = strokeWidth
-        }
+        // Rotate canvas -45° around center
+        canvas.save()
+        canvas.rotate(-45f, w / 2f, h / 2f)
 
-        val alphas = intArrayOf(255, 179, 102) // 1.0, 0.7, 0.4
-        val radii = floatArrayOf(w * 0.22f, w * 0.38f, w * 0.54f)
+        val cx = w * 0.5f
+        val handleW = w * 0.18f
+        val headW = w * 0.44f
+        val jawW = w * 0.13f
+        val halfHandle = handleW / 2f
+        val halfHead = headW / 2f
 
-        for (i in alphas.indices) {
-            val r = radii[i]
-            arcPaint.alpha = alphas[i]
-            val rect = RectF(cx - r, cy - r, cx + r, cy + r)
-            canvas.drawArc(rect, -135f, 90f, false, arcPaint)
-        }
+        // Handle
+        val hr = halfHandle
+        canvas.drawRoundRect(
+            RectF(cx - halfHandle, h * 0.42f, cx + halfHandle, h * 0.94f),
+            hr, hr, paint,
+        )
+
+        // Shoulder
+        val sr = w * 0.04f
+        canvas.drawRoundRect(
+            RectF(cx - halfHead, h * 0.30f, cx + halfHead, h * 0.46f),
+            sr, sr, paint,
+        )
+
+        // Left jaw
+        val jr = jawW * 0.35f
+        canvas.drawRoundRect(
+            RectF(cx - halfHead, h * 0.08f, cx - halfHead + jawW, h * 0.36f),
+            jr, jr, paint,
+        )
+
+        // Right jaw
+        canvas.drawRoundRect(
+            RectF(cx + halfHead - jawW, h * 0.08f, cx + halfHead, h * 0.36f),
+            jr, jr, paint,
+        )
+
+        canvas.restore()
 
         return IconCompat.createWithBitmap(bitmap)
     }

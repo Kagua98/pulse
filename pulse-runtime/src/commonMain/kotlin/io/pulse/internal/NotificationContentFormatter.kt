@@ -5,8 +5,6 @@ import io.pulse.model.CrashEntry
 import io.pulse.model.HttpTransaction
 import io.pulse.log.LogEntry
 import io.pulse.log.LogLevel
-import io.pulse.model.TransactionStatus
-
 /**
  * Formatted notification content ready to be posted.
  */
@@ -34,19 +32,22 @@ internal object NotificationContentFormatter {
 
     private fun formatNetworkActivity(transactions: List<HttpTransaction>): NotificationContent {
         val total = transactions.size
-        val ok = transactions.count { it.isSuccess }
-        val errors = transactions.count { it.isClientError || it.isServerError || it.isFailed }
-        val redirects = transactions.count { it.isRedirect }
-        val pending = transactions.count { it.status == TransactionStatus.Requested }
 
-        val parts = buildList {
-            if (ok > 0) add("$ok OK")
-            if (errors > 0) add("$errors error${if (errors != 1) "s" else ""}")
-            if (redirects > 0) add("$redirects redirect${if (redirects != 1) "s" else ""}")
-            if (pending > 0) add("$pending pending")
+        if (transactions.isEmpty()) {
+            return NotificationContent(
+                title = "Pulse",
+                text = "No requests yet",
+                lines = emptyList(),
+            )
         }
-        val text = if (parts.isEmpty()) "No requests yet" else parts.joinToString(" / ")
 
+        // Show the most recent transaction as the collapsed text (like Chucker)
+        val latest = transactions.first()
+        val latestCode = latest.responseCode?.toString() ?: "..."
+        val latestDuration = if (latest.duration > 0) " (${latest.duration}ms)" else ""
+        val text = "$latestCode ${latest.method} ${latest.path}$latestDuration"
+
+        // Expanded InboxStyle: last 5 transactions
         val lines = transactions.take(5).map { txn ->
             val code = txn.responseCode?.toString() ?: "..."
             val duration = if (txn.duration > 0) "(${txn.duration}ms)" else ""

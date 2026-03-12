@@ -14,7 +14,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 /**
@@ -45,8 +44,7 @@ internal class NotificationContentUpdater(private val context: Context) {
             ) { transactions, logs, crashes, contentType ->
                 NotificationContentFormatter.format(contentType, transactions, logs, crashes)
             }
-                .debounce(500L)
-                .distinctUntilChanged()
+                .debounce(250L)
                 .collect { content -> postNotification(content) }
         }
     }

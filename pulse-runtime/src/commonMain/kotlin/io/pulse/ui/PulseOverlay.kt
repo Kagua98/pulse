@@ -27,8 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
@@ -207,9 +207,8 @@ private fun DraggableFab(
 }
 
 /**
- * A radar/sonar ping icon drawn via Canvas.
- * Center dot with three concentric arcs radiating outward at decreasing opacity,
- * representing a detection/monitoring signal.
+ * A wrench/spanner icon drawn via Canvas.
+ * Rotated -45° for a natural tool appearance.
  */
 @Composable
 private fun PulseIcon(modifier: Modifier = Modifier) {
@@ -217,43 +216,46 @@ private fun PulseIcon(modifier: Modifier = Modifier) {
     Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
-        val strokeWidth = w * 0.07f
 
-        // Center dot positioned at ~35% from left, ~65% from top
-        val cx = w * 0.35f
-        val cy = h * 0.65f
+        rotate(-45f) {
+            val cx = w * 0.5f
+            val handleW = w * 0.18f
+            val headW = w * 0.44f
+            val jawW = w * 0.13f
+            val halfHandle = handleW / 2f
+            val halfHead = headW / 2f
 
-        // Soft glow behind the center dot
-        drawCircle(
-            color = color.copy(alpha = 0.2f),
-            radius = w * 0.09f,
-            center = androidx.compose.ui.geometry.Offset(cx, cy),
-        )
+            // Handle
+            drawRoundRect(
+                color = color,
+                topLeft = androidx.compose.ui.geometry.Offset(cx - halfHandle, h * 0.42f),
+                size = androidx.compose.ui.geometry.Size(handleW, h * 0.52f),
+                cornerRadius = CornerRadius(halfHandle),
+            )
 
-        // Center dot
-        drawCircle(
-            color = color,
-            radius = w * 0.065f,
-            center = androidx.compose.ui.geometry.Offset(cx, cy),
-        )
+            // Shoulder (connects jaws to handle)
+            drawRoundRect(
+                color = color,
+                topLeft = androidx.compose.ui.geometry.Offset(cx - halfHead, h * 0.30f),
+                size = androidx.compose.ui.geometry.Size(headW, h * 0.16f),
+                cornerRadius = CornerRadius(w * 0.04f),
+            )
 
-        // Three concentric arcs radiating upper-right
-        val arcAlphas = floatArrayOf(1.0f, 0.7f, 0.4f)
-        val arcRadii = floatArrayOf(w * 0.22f, w * 0.38f, w * 0.54f)
+            // Left jaw
+            val jawRadius = jawW * 0.35f
+            drawRoundRect(
+                color = color,
+                topLeft = androidx.compose.ui.geometry.Offset(cx - halfHead, h * 0.08f),
+                size = androidx.compose.ui.geometry.Size(jawW, h * 0.28f),
+                cornerRadius = CornerRadius(jawRadius),
+            )
 
-        for (i in arcAlphas.indices) {
-            val radius = arcRadii[i]
-            drawArc(
-                color = color.copy(alpha = arcAlphas[i]),
-                startAngle = -135f, // upper-right quadrant
-                sweepAngle = 90f,
-                useCenter = false,
-                topLeft = androidx.compose.ui.geometry.Offset(cx - radius, cy - radius),
-                size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
-                style = Stroke(
-                    width = strokeWidth,
-                    cap = StrokeCap.Round,
-                ),
+            // Right jaw
+            drawRoundRect(
+                color = color,
+                topLeft = androidx.compose.ui.geometry.Offset(cx + halfHead - jawW, h * 0.08f),
+                size = androidx.compose.ui.geometry.Size(jawW, h * 0.28f),
+                cornerRadius = CornerRadius(jawRadius),
             )
         }
     }

@@ -1,9 +1,10 @@
 package io.pulse.internal
 
 import android.Manifest
-import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -16,9 +17,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.core.util.Consumer
 
 @Composable
 internal actual fun NotificationAccessEffect(
@@ -27,7 +26,6 @@ internal actual fun NotificationAccessEffect(
 ) {
     val context = LocalContext.current
     val currentOnOpen by rememberUpdatedState(onOpenRequested)
-    val lifecycleOwner = LocalLifecycleOwner.current
 
     // Track whether we have notification permission
     var hasPermission by remember {
@@ -78,26 +76,40 @@ internal actual fun NotificationAccessEffect(
         }
     }
 
-    // When notification mode is active, detect taps via the intent extra.
+    // Detect notification taps.
     // The notification's PendingIntent brings the app to foreground with
-    // "pulse_notification_tap" = true. We check this on ON_RESUME and consume
-    // the extra so it doesn't re-trigger when the inspector is closed.
+    // "pulse_notification_tap" = true in the intent extras.
+    //
+    // Two cases:
+    // 1. Cold start: the extra is in activity.intent (checked via LaunchedEffect)
+    // 2. Warm start: FLAG_ACTIVITY_SINGLE_TOP delivers via onNewIntent(),
+    //    which does NOT update activity.intent — we must use
+    //    addOnNewIntentListener to catch it.
     if (active) {
-        DisposableEffect(lifecycleOwner) {
-            val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_RESUME) {
-                    val activity = context as? Activity ?: return@LifecycleEventObserver
-                    val intent = activity.intent ?: return@LifecycleEventObserver
+        val activity = context as? ComponentActivity
+
+        // Cold start: check the activity's current intent
+        LaunchedEffect(Unit) {
+            val intent = activity?.intent
+            if (intent?.getBooleanExtra("pulse_notification_tap", false) == true) {
+                intent.removeExtra("pulse_notification_tap")
+                currentOnOpen()
+            }
+        }
+
+        // Warm start: listen for new intents delivered via onNewIntent()
+        if (activity != null) {
+            DisposableEffect(activity) {
+                val listener = Consumer<Intent> { intent ->
                     if (intent.getBooleanExtra("pulse_notification_tap", false)) {
-                        // Consume the extra so it doesn't fire again
                         intent.removeExtra("pulse_notification_tap")
                         currentOnOpen()
                     }
                 }
-            }
-            lifecycleOwner.lifecycle.addObserver(observer)
-            onDispose {
-                lifecycleOwner.lifecycle.removeObserver(observer)
+                activity.addOnNewIntentListener(listener)
+                onDispose {
+                    activity.removeOnNewIntentListener(listener)
+                }
             }
         }
     }
