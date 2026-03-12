@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "io.github.kagua98"
-version = "1.0.0-alpha09"
+version = "1.0.0-alpha10"
 
 val generatePulseVersion by tasks.registering {
     val outputDir = layout.buildDirectory.dir("generated/pulse/kotlin")
@@ -31,12 +31,23 @@ val generatePulseVersion by tasks.registering {
     }
 }
 
+@OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 kotlin {
     androidTarget {
         publishLibraryVariants("release")
     }
 
     jvm("desktop")
+
+    js(IR) {
+        browser()
+        nodejs()
+    }
+
+    wasmJs {
+        browser()
+        nodejs()
+    }
 
     listOf(
         iosX64(),
@@ -107,7 +118,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.kagua98",
         artifactId = "pulse",
-        version = "1.0.0-alpha09",
+        version = "1.0.0-alpha10",
     )
 
     pom {

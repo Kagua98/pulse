@@ -8,12 +8,23 @@ plugins {
     alias(libs.plugins.vanniktech.publish)
 }
 
+@OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 kotlin {
     androidTarget {
         publishLibraryVariants("release")
     }
 
     jvm("desktop")
+
+    js(IR) {
+        browser()
+        nodejs()
+    }
+
+    wasmJs {
+        browser()
+        nodejs()
+    }
 
     listOf(
         iosX64(),
@@ -57,7 +68,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.kagua98",
         artifactId = "pulse-log",
-        version = "1.0.0-alpha09",
+        version = "1.0.0-alpha10",
     )
 
     pom {
